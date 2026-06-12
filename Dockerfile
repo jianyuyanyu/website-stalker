@@ -19,7 +19,12 @@ RUN strip target/release/website-stalker
 
 FROM docker.io/library/alpine:3 AS final
 RUN apk upgrade --no-cache \
-	&& apk add --no-cache git
+	&& apk add --no-cache git \
+	&& addgroup -S -g 923 runner \
+	&& adduser -S -D -u 923 -G runner runner \
+	&& rm -f -- /etc/*-
 
 COPY --from=builder /build/target/release/website-stalker /usr/local/bin/
+
+USER runner
 ENTRYPOINT ["website-stalker"]
